@@ -1,0 +1,28 @@
+name: CI - Build Docker Image
+
+# Run this workflow whenever code is pushed to main, or on a pull request into main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        # Note: this build uses a dummy OPENROUTER_API_KEY just so ingest.py
+        # (which doesn't actually need the key) runs cleanly during the build.
+        # No real secret is needed for this step.
+        run: docker build -t devops-assistant-bot:ci .
+
+      - name: Confirm image was created
+        run: docker images devops-assistant-bot
