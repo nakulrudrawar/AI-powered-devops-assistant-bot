@@ -1,0 +1,26 @@
+# Ansible Application Server Setup
+
+- name: Configure Application Server
+  hosts: app_servers
+  become: true
+
+  tasks:
+    - name: Update packages
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create application page
+      copy:
+        content: "3-Tier AWS Application Server"
+        dest: /var/www/html/index.html

@@ -1,0 +1,20 @@
+2026-08-18 10:00:11 | i-0b98cd76ef54a3210 | INFO | EC2 instance status check passed
+2026-08-18 10:03:26 | i-0b98cd76ef54a3210 | INFO | System status check passed
+2026-08-18 10:06:42 | i-0b98cd76ef54a3210 | INFO | Instance health status: Healthy
+2026-08-18 10:09:17 | i-0b98cd76ef54a3210 | INFO | Network connectivity check passed
+2026-08-18 10:12:35 | i-0b98cd76ef54a3210 | WARNING | Instance status check taking longer than expected
+2026-08-18 10:15:08 | i-0b98cd76ef54a3210 | WARNING | Instance health check failed
+2026-08-18 10:16:24 | i-0b98cd76ef54a3210 | ERROR | System status check failed
+2026-08-18 10:17:39 | i-0b98cd76ef54a3210 | ERROR | Instance is unreachable
+2026-08-18 10:18:51 | i-0b98cd76ef54a3210 | ERROR | Application health endpoint not responding
+2026-08-18 10:20:13 | i-0b98cd76ef54a3210 | WARNING | Auto Scaling health check marked instance unhealthy
+2026-08-18 10:21:47 | i-0b98cd76ef54a3210 | INFO | Auto Scaling replacement initiated
+2026-08-18 10:23:06 | i-0b98cd76ef54a3210 | INFO | Instance termination started
+2026-08-18 10:25:32 | i-0c45de67fa89b1230 | INFO | Replacement instance launched
+2026-08-18 10:27:14 | i-0c45de67fa89b1230 | INFO | System status check passed
+2026-08-18 10:29:48 | i-0c45de67fa89b1230 | INFO | Instance status check passed
+2026-08-18 10:32:19 | i-0c45de67fa89b1230 | INFO | Application service started
+2026-08-18 10:35:41 | i-0c45de67fa89b1230 | INFO | Application health endpoint responding
+2026-08-18 10:38:05 | i-0c45de67fa89b1230 | INFO | Network connectivity check passed
+2026-08-18 10:41:27 | i-0c45de67fa89b1230 | INFO | Instance health status: Healthy
+2026-08-18 10:44:53 | i-0c45de67fa89b1230 | INFO | Replacement instance successfully added to Auto Scaling Group
