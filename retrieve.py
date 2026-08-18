@@ -32,8 +32,12 @@ def load_vector_store():
 
 def retrieve_chunks(vector_store, question, top_k=TOP_K):
     """Find the top_k most relevant chunks for a given question."""
-    results = vector_store.similarity_search(question, k=top_k)
-    return results
+    try:
+        results = vector_store.similarity_search(question, k=top_k)
+        return results
+    except Exception as e:
+        print(f"Error during retrieval: {e}")
+        return []
 
 
 def print_results(question, results):

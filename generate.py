@@ -62,13 +62,23 @@ def ask_llm(prompt):
         ],
     }
 
-    response = requests.post(OPENROUTER_URL, headers=headers, json=payload)
+    try:
+        response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=30)
+    except requests.exceptions.Timeout:
+        return "Sorry, the request timed out. OpenRouter may be slow right now — please try again."
+    except requests.exceptions.ConnectionError:
+        return "Sorry, could not connect to OpenRouter. Check your internet connection and try again."
+    except requests.exceptions.RequestException as e:
+        return f"Sorry, something went wrong while contacting the LLM: {e}"
 
     if response.status_code != 200:
         return f"Error {response.status_code}: {response.text}"
 
-    data = response.json()
-    return data["choices"][0]["message"]["content"]
+    try:
+        data = response.json()
+        return data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, ValueError):
+        return "Sorry, received an unexpected response from the LLM. Please try again."
 
 
 def answer_question(vector_store, question):
