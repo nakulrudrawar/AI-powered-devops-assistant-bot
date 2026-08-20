@@ -74,21 +74,9 @@ If the answer isn't in the knowledge base, the bot says so honestly instead of m
 
 ## Testing retrieval or the LLM separately
 
-- Test retrieval only: `python retrieve.py`
-- Test the full pipeline in the terminal (no UI): `python generate.py`
 
 ## Known Limitations
 
-- Answers are not perfectly deterministic — asking the same question twice may return slightly different wording, since LLMs generate text probabilistically by default.
-- Retrieval quality depends on the size and specificity of the knowledge base — very short or vague questions (e.g. a single word) sometimes retrieve a plausible-but-not-ideal match rather than asking for clarification.
-- Uses a free-tier "preview" model on OpenRouter, which may be rate-limited, slower, or replaced by the provider without much notice. The model name in `generate.py` can be swapped for any other OpenRouter-supported model with a one-line change.
 
 ## Roadmap
 
-- [x] Build RAG pipeline (ingest, retrieve, generate)
-- [x] Build Streamlit UI
-- [x] Test and add error handling
-- [ ] Dockerize the app
-- [ ] Set up CI/CD with GitHub Actions
-- [ ] Deploy to AWS EC2
-- [ ] Add CloudWatch monitoring
