@@ -1,82 +1,118 @@
-# DevOps Assistant Bot
+# AI-Powered DevOps Assistant Bot
 
-A chatbot that answers questions about AWS infrastructure, runbooks, and CloudWatch-style logs using RAG (Retrieval-Augmented Generation) and an LLM. Built as a hands-on project combining AI/LLM skills with DevOps practices.
+A Streamlit chatbot that answers DevOps questions using local document retrieval and an LLM. It searches runbooks and sample CloudWatch-style logs, then generates an answer grounded in the retrieved context.
 
-## What it does
+## How it works
 
-Ask a question like *"Why is CPU utilization high?"* or *"How do I fix low disk space?"* and the bot:
-1. Searches a local knowledge base of runbooks and logs for relevant information
-2. Sends that information + your question to an LLM
-3. Returns a grounded answer, along with the source documents used
+1. `ingest.py` loads `.txt` and `.md` files from `data/`.
+2. Documents are split into chunks and embedded with `all-MiniLM-L6-v2`.
+3. ChromaDB stores the embeddings in the local `chroma_db/` directory.
+4. `retrieve.py` finds the three most relevant chunks for a question.
+5. `generate.py` sends the question and context to OpenRouter.
+6. `app.py` provides the Streamlit chat interface and displays source files.
 
-If the answer isn't in the knowledge base, the bot says so honestly instead of making something up.
+## Requirements
 
-## Tech Stack
+- Python 3.11 or later
+- An OpenRouter API key
+- Internet access on the first run to download packages and the embedding model
 
-| Layer | Tool |
-|---|---|
-| LLM | Dots3-Note Preview (via OpenRouter, free tier) |
-| RAG / Retrieval | LangChain + ChromaDB |
-| Embeddings | sentence-transformers (all-MiniLM-L6-v2, runs locally, free) |
-| UI | Streamlit |
-| Containerization | Docker *(coming in Week 2)* |
-| CI/CD | GitHub Actions *(coming in Week 2)* |
-| Cloud | AWS EC2 *(coming in Week 2)* |
-| Monitoring | CloudWatch *(coming in Week 2)* |
+## Local setup
 
-## Project Structure
+Run these commands from the repository root.
 
-```
-├── data/                      # Runbooks and sample logs (knowledge base source)
-├── chroma_db/                 # Generated vector database (not committed to git)
-├── ingest.py                  # Loads data, chunks it, creates embeddings, saves to ChromaDB
-├── retrieve.py                # Searches ChromaDB for relevant chunks given a question
-├── generate.py                # Sends question + retrieved chunks to the LLM via OpenRouter
-├── app.py                     # Streamlit chat interface
-└── requirements.txt
+### Windows
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
 ```
 
-## Setup
+### macOS/Linux
 
-1. Clone the repo:
-   ```
-   git clone <your-repo-url>
-   cd AI-powered-devops-assistant-bot
-   ```
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-2. Create and activate a virtual environment:
-   ```
-   python -m venv venv
-   venv\Scripts\activate   # Windows
-   source venv/bin/activate  # Mac/Linux
-   ```
+Create a `.env` file in the project root:
 
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+```env
+OPENROUTER_API_KEY=your_key_here
+```
 
-4. Create a `.env` file in the project root:
-   ```
-   OPENROUTER_API_KEY=your_key_here
-   ```
-   Get a free key at [openrouter.ai](https://openrouter.ai).
+Keep this key private and never commit `.env`.
 
-5. Build the vector database (run once, and again anytime you change files in `/data`):
-   ```
-   python ingest.py
-   ```
+Build the local vector database:
 
-6. Run the app:
-   ```
-   streamlit run app.py
-   ```
+```bash
+python ingest.py
+```
 
-## Testing retrieval or the LLM separately
+Run the web application:
 
+```bash
+streamlit run app.py
+```
 
-## Known Limitations
+The app opens at `http://localhost:8501`.
 
+## Other commands
 
-## Roadmap
+Test document retrieval:
+
+```bash
+python retrieve.py
+```
+
+Run the complete assistant in the terminal:
+
+```bash
+python generate.py
+```
+
+Both interactive scripts use `exit` to quit. Rerun `python ingest.py` after changing the knowledge-base files. The current ingestion script supports only `.txt` and `.md`; Terraform (`.tf`) and YAML (`.yml`) files in `data/` are not indexed.
+
+## Docker
+
+The image builds the vector database during `docker build`.
+
+```bash
+docker build -t devops-assistant-bot .
+docker run --rm -p 8501:8501 -e OPENROUTER_API_KEY=your_key_here devops-assistant-bot
+```
+
+Open `http://localhost:8501`. Docker builds require network access because dependencies and the embedding model are installed or downloaded during the build.
+
+## CI/CD
+
+`.github/workflows/ci.yml` builds the Docker image for pull requests and pushes to `main`. On pushes to `main`, it publishes the `latest` image to Docker Hub.
+
+Configure these repository secrets for publishing:
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+
+## Project structure
+
+```text
+app.py                 Streamlit chat interface
+ingest.py              Build the ChromaDB vector store
+retrieve.py            Retrieve relevant document chunks
+generate.py            Generate answers through OpenRouter
+data/                  Runbooks and sample logs
+chroma_db/             Generated local vector database
+Dockerfile             Container image definition
+requirements.txt       Python dependencies
+```
+
+## Limitations
+
+- Dependencies are not pinned, so installs may not be fully reproducible.
+- There are no automated tests or production authentication features.
+- OpenRouter availability, rate limits, and model behavior can affect responses.
+- The local embedding model requires disk space, memory, and a first-run download.
+- Repeated ingestion may add duplicate entries to the existing ChromaDB because the script does not reset the database.
 
